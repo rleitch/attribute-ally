@@ -6,11 +6,11 @@ namespace AttributeAlly.Core.Extensions
 {
     public static class IServiceCollectionExtensions
     {
-        public static IServiceCollection IdkYet(this IServiceCollection services)
+        public static IServiceCollection HarmonizeSerializationAttributes(this IServiceCollection services)
         {
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
-                ContractResolver = new SystemTextJsonContractResolver()
+                ContractResolver = SystemTextJsonContractResolver.Instance
             };
             return services;
         }
