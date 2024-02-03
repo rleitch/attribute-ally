@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using AttributeAlly.Core.Extensions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Concurrent;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace AttributeAlly.Core.Newtonsoft
 {
@@ -17,19 +16,9 @@ namespace AttributeAlly.Core.Newtonsoft
         {
             return propertyCache.GetOrAdd(member, m =>
             {
-                var property = base.CreateProperty(member, memberSerialization);
-                if (!m.IsDefined(typeof(JsonPropertyAttribute), true)
-                    && (m.DeclaringType?.GetCustomAttribute<DataContractAttribute>() == null
-                        || !m.IsDefined(typeof(DataMemberAttribute), true)))
-                {
-                    var jsonPropertyNameAttribute = m.GetCustomAttribute<JsonPropertyNameAttribute>();
-                    if (jsonPropertyNameAttribute != null)
-                    {
-                        property.Ignored = false;
-                        property.PropertyName = jsonPropertyNameAttribute.Name;
-                    }
-                }
-                return property;
+                return base.CreateProperty(member, memberSerialization)
+                    .HandleJsonPropertyNameAttribute(member)
+                    .HandleJsonIgnoreAttribute(member, memberSerialization);
             });
         }
     }
